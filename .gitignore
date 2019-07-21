@@ -1,0 +1,16 @@
+# Windows:
+automation.sqlite
+
+
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# My configurations:
+result.txt
+verify.jpg
+.idea/

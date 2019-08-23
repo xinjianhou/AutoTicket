@@ -94,6 +94,7 @@ class Automation():
     def queryTicket(self):
         query_url = "https://kyfw.12306.cn/otn/leftTicket/init"
         self.browser.get(query_url)
+        time.sleep(1)
         self.browser.execute_script("document.getElementById('fromStation').removeAttribute('type')")
         fromStation = self.browser.find_element_by_id("fromStation")
         fromStation.send_keys(self.db.getOrigin())
@@ -117,7 +118,7 @@ class Automation():
         trains = self.browser.find_elements_by_class_name("number")
         self.browser.execute_script("document.getElementById('avail_ticket').checked")
         for i, item in enumerate(trains):
-            print(item)
+
             print("【{}】{}".format(i, item.text))
         num = input("请输入预定车次编号：")
         print(num)
@@ -191,6 +192,22 @@ class Automation():
 
     def buy_ticket(self):
         self.browser.execute_script("document.getElementById('avail_ticket').checked = true")
+        time.sleep(1)
+        trains = self.browser.find_elements_by_xpath('//*[starts-with(@id,"ZE_")]')
+
+        for i, item in enumerate(trains):
+            print("【{}】{}".format(i, item.text))
+            if item.text != "--":
+                self.browser.find_elements_by_class_name("btn72")[int(i)].click()
+                break
+
+        ul = WebDriverWait(self.browser, 100).until(
+            EC.presence_of_element_located((By.ID, "normal_passenger_id"))
+        )
+        time.sleep(1)
+        lis = ul.find_elements_by_tag_name("li")
+        for i, item in enumerate(lis):
+            print("【{}】{}".format(i, item.find_elements_by_tag_name("label")[0].text))
 
     def __call__(self, *args, **kwargs):
         app = wx.App()  # 初始化
@@ -200,6 +217,7 @@ class Automation():
         #time.sleep()
         if self.db.count() < 5:
             exit(1)
+        time.sleep(1)
         self.login()
 
         self.getVerifyImage()
